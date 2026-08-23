@@ -1,0 +1,27 @@
+# Data & model artifacts are versioned via DVC / MLflow / the container
+# registry, not committed directly to git.
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+model/*.pt
+model/*.pkl
+src/mlruns/
+src/artifacts/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+
+# DVC
+/.dvc/tmp
+/.dvc/cache
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/

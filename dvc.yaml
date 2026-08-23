@@ -1,0 +1,21 @@
+stages:
+  download_data:
+    cmd: python src/download_data.py
+    outs:
+      - data/raw:
+          persist: true
+      - data/processed:
+          persist: true
+
+  train:
+    cmd: python src/train.py
+    deps:
+      - data/processed
+      - src/train.py
+      - src/model.py
+      - src/pipelines.py
+    outs:
+      - model/model.pt
+    metrics:
+      - src/artifacts/model_comparison.json:
+          cache: false
