@@ -40,26 +40,59 @@ source venv/bin/activate
 pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cpu
 ```
 
-## 2. Data versioning with DVC
-This project tracks the dataset with DVC rather than committing images
-to git directly.
+## 2. Data & Code Versioning with Git and Git LFS
+
+Git is used for versioning the source code, project structure, scripts,
+notebooks, and configuration files.
+
+Git LFS (Large File Storage) is used to version the dataset and
+pre-processed image data without storing large binary files directly
+in the normal Git history.
+
+### Git LFS setup
+
+Install and initialize Git LFS:
 
 ```bash
-dvc init
-dvc remote add -d storage <your-remote-url>   # e.g. S3, GDrive, local path
-dvc repro                # runs the dvc.yaml pipeline: download_data -> train
-dvc push                 # push data + model artifacts to the DVC remote
+git lfs install
+```
+
+### Track large dataset files:
+```bash
+git lfs track "data/raw/**/*.jpg"
+git lfs track "data/raw/**/*.png"
+git lfs track "data/processed/**/*.jpg"
+git lfs track "data/processed/**/*.png"
+```
+The LFS configuration is stored in .gitattributes.
+
+Add and commit the files:
+```bash
+git add .gitattributes
+git add data/
+git commit -m "Add dataset and pre-processed data using Git LFS"
+git push
+```
+To verify files tracked by Git LFS:
+```bash
+git lfs ls-files
+```
+To retrieve the LFS files after cloning the repository:
+```
+git lfs pull
 ```
 
 Kaggle API credentials are required for `download_data.py`
 (`~/.kaggle/kaggle.json` or `KAGGLE_USERNAME`/`KAGGLE_KEY` env vars).
 
-## 3. Train directly (without DVC)
+## 3. Train directly
 ```bash
 cd src
 python download_data.py
 python train.py
-mlflow ui --backend-store-uri ./mlruns --port 5000   # inspect runs at localhost:5000
+
+# $env:MLFLOW_ALLOW_FILE_STORE="true"
+mlflow ui --backend-store-uri sqlite:///mlflow.db --port 5000   # inspect runs at localhost:5000
 ```
 
 ## 4. Run tests
@@ -77,7 +110,7 @@ docker build -t catsdogs-api:latest .
 docker run -d -p 8000:8000 catsdogs-api:latest
 
 curl http://localhost:8000/health
-curl -X POST http://localhost:8000/predict -F "file=@/path/to/image.jpg"
+curl -X POST http://localhost:8000/predict -F "file=@D:\Github\catsdogs-mlops\data\raw\test\cats\cat.10.jpg"
 ```
 Swagger UI: http://localhost:8000/docs
 
@@ -120,10 +153,3 @@ kubectl port-forward svc/monitoring-grafana 3000:80
 The API exposes request count, latency, and error metrics at
 `/metrics` via `prometheus-fastapi-instrumentator`, scraped every 15s
 by the `ServiceMonitor`.
-
-## Notes on reuse
-The CI/CD scaffolding (Docker multi-stage pattern, GitHub Actions
-structure, Kubernetes manifests, Prometheus/Grafana wiring) is adapted
-from an earlier tabular-data MLOps project. The data pipeline, model
-architecture, training loop, and inference API are new for this image
-classification use case.

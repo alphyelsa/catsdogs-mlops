@@ -31,6 +31,7 @@ def get_train_transforms() -> transforms.Compose:
     improve generalization on a relatively small dataset.
     """
     return transforms.Compose([
+        RGBTransform(),
         transforms.Resize((IMAGE_SIZE, IMAGE_SIZE)),
         transforms.RandomHorizontalFlip(p=0.5),
         transforms.RandomRotation(degrees=15),
@@ -46,6 +47,7 @@ def get_eval_transforms() -> transforms.Compose:
     inference — no augmentation, since predictions must be reproducible.
     """
     return transforms.Compose([
+        RGBTransform(),
         transforms.Resize((IMAGE_SIZE, IMAGE_SIZE)),
         transforms.ToTensor(),
         transforms.Normalize(mean=NORMALIZE_MEAN, std=NORMALIZE_STD),
@@ -75,3 +77,7 @@ def get_dataloaders(batch_size: int = BATCH_SIZE):
     test_loader = DataLoader(test_ds, batch_size=batch_size, shuffle=False, num_workers=num_workers)
 
     return train_loader, val_loader, test_loader, train_ds.classes
+
+class RGBTransform:
+    def __call__(self, image):
+        return image.convert("RGB")

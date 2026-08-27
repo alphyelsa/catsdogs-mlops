@@ -144,7 +144,19 @@ def train_and_log() -> None:
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
 
+    mlflow.set_tracking_uri("sqlite:///mlflow.db")
+    mlflow.set_experiment("CatsDogsCNN")
+
+    print("MLflow tracking URI:", mlflow.get_tracking_uri())
+
+    experiment = mlflow.get_experiment_by_name("CatsDogsCNN")
+    print("Experiment ID:", experiment.experiment_id)
+    print("Experiment name:", experiment.name)
+
     with mlflow.start_run(run_name="CatsDogsCNN"):
+        print("Run ID:", mlflow.active_run().info.run_id)
+        print("Run experiment ID:", mlflow.active_run().info.experiment_id)
+
         mlflow.log_params({
             "model": "CatsDogsCNN",
             "image_size": 224,
