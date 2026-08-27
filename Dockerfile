@@ -1,5 +1,5 @@
 # Stage 1: Build & Python Dependency Wheel Cache
-FROM python:3.10-slim AS builder
+FROM python:3.12-slim AS builder
 WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends build-essential && rm -rf /var/lib/apt/lists/*
 COPY requirements.txt .
@@ -9,7 +9,7 @@ RUN pip install --user --no-cache-dir -r requirements.txt \
     --extra-index-url https://download.pytorch.org/whl/cpu
 
 # Stage 2: Clean Executable Runtime
-FROM python:3.10-slim AS runner
+FROM python:3.12-slim AS runner
 WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends libgl1 libglib2.0-0 && rm -rf /var/lib/apt/lists/*
 COPY --from=builder /root/.local /root/.local
