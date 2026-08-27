@@ -165,24 +165,21 @@ jobs:
         run: |
           status=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/health)
           echo "Health endpoint returned $status"
-          if [ "$status" != "200" ] && [ "$status" != "503" ]; then
+          if [ "$status" != "200" ]; then
             echo "Health check failed unexpectedly."
             exit 1
           fi
 
       - name: Smoke test - predict endpoint
         run: |
-          python3 -c "
-          from PIL import Image
-          import numpy as np
-          Image.fromarray((np.random.rand(200,200,3)*255).astype('uint8')).save('/tmp/smoke.jpg')
-          "
           status=$(curl -s -o /tmp/predict_response.json -w "%{http_code}" \
             -X POST http://localhost:8080/predict \
-            -F "file=@/tmp/smoke.jpg;type=image/jpeg")
+            -F "file=@tests/data/smoke.jpg;type=image/jpeg")
+      
           echo "Predict endpoint returned $status"
           cat /tmp/predict_response.json
-          if [ "$status" != "200" ] && [ "$status" != "503" ]; then
+      
+          if [ "$status" != "200" ]; then
             echo "Predict smoke test failed."
             exit 1
           fi
