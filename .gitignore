@@ -1,9 +1,5 @@
-# Data & model artifacts are versioned via DVC / MLflow / the container
-# registry, not committed directly to git.
-data/raw/*
-data/processed/*
-!data/raw/.gitkeep
-!data/processed/.gitkeep
+# Dataset is versioned using Git LFS
+# Large image files are tracked through .gitattributes
 
 model/*.pt
 model/*.pkl

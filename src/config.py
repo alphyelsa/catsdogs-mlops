@@ -29,14 +29,12 @@ TRACKING_URI = f"file:///{MLRUNS_DIR}"
 IMAGE_SIZE = 224  # standard CNN input size (e.g. ResNet/EfficientNet family)
 CLASS_NAMES = ["cat", "dog"]  # index 0 = cat, index 1 = dog
 
-# Split ratios (must sum to 1.0)
+# Split ratios
 TRAIN_SPLIT = 0.8
 VAL_SPLIT = 0.1
 TEST_SPLIT = 0.1
 
-# ImageNet normalization stats — used even for the from-scratch CNN
-# so the same preprocessing code path works if a pretrained backbone
-# is swapped in later without touching train.py / app.py.
+# ImageNet normalization stats
 NORMALIZE_MEAN = [0.485, 0.456, 0.406]
 NORMALIZE_STD = [0.229, 0.224, 0.225]
 
